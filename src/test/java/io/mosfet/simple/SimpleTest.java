@@ -1,68 +1,55 @@
 package io.mosfet.simple;
 
-import io.mosfet.kafka.examples.KafkaConfig;
 import io.mosfet.kafka.examples.simple.consumer.Consumer;
 import io.mosfet.kafka.examples.simple.consumer.ConsumerService;
+import io.mosfet.kafka.examples.simple.consumer.SimpleTextConsumer;
 import io.mosfet.kafka.examples.simple.producer.SimpleTextProducer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.jmock.Mockery;
-import org.jmock.junit5.JUnit5Mockery;
-import org.jmock.lib.legacy.ClassImposteriser;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 import static org.awaitility.Awaitility.await;
 
-@Import(KafkaTestEnvConfig.class)
-@SpringBootTest
-@ActiveProfiles("test")
+@Testcontainers
 class SimpleTest {
 
     public static final String TOPIC = "simple.text";
 
-    @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Autowired
-    private KafkaContainer kafkaContainer;
+    @Container
+    private KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.1"));
 
-    private ConsumerService consumerService;
+    private TestableConsumerService consumerService;
 
 
-    @RegisterExtension
-    Mockery context  = new JUnit5Mockery() {
-        {
-            setImposteriser(ClassImposteriser.INSTANCE);
-        }
-    };
-
-/*    @BeforeEach
+    @BeforeEach
     void setUp() throws ExecutionException, InterruptedException {
-        consumerService = context.mock(ConsumerService.class);
-
-        kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.3"));
         kafkaContainer.start();
 
         Map<String, Object> config = new HashMap<>();
@@ -73,10 +60,26 @@ class SimpleTest {
 
         kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(config));
 
-        //createTopic(kafkaContainer.getBootstrapServers(), TOPIC, 1);
+        createTopic(kafkaContainer.getBootstrapServers(), TOPIC, 1);
 
-        //initializeVanillaConsumer(TOPIC, "simple.mygroup", kafkaContainer.getBootstrapServers(), new SimpleTextConsumer(consumerService));
-    }*/
+        consumerService = new TestableConsumerService();
+
+        initializeVanillaConsumer(TOPIC, "simple.mygroup", kafkaContainer.getBootstrapServers(), new SimpleTextConsumer(consumerService));
+    }
+
+    static class TestableConsumerService implements ConsumerService {
+        private boolean called;
+
+        @Override
+        public void call(String text) {
+            called = true;
+        }
+
+        public boolean isCalled() {
+            return called;
+        }
+    }
+
 
     public static void createTopic(String bootstrapServers, String topic, int partitions) throws InterruptedException, java.util.concurrent.ExecutionException {
         Map<String, Object> conf = new HashMap<>();
@@ -110,11 +113,13 @@ class SimpleTest {
 
     @Test
     @DisplayName("I want to send a text message in a kafka queue and read it")
-    void testMe() {
+    void givenAMessageReadIt() throws InterruptedException {
+        Thread.sleep(5000);
+
         SimpleTextProducer simpleTextProducer = new SimpleTextProducer(kafkaTemplate);
         simpleTextProducer.sendMessage("my message");
 
-        await().atMost(30, TimeUnit.SECONDS);
+        await().atMost(5, TimeUnit.SECONDS).until(() -> consumerService.isCalled());
     }
 
 }

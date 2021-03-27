@@ -12,6 +12,7 @@ public class SimpleTextProducer {
     }
 
     public void sendMessage(String message) {
+        System.out.println("**try to send a message**");
         kafkaTemplate.send(TOPIC, message);
     }
 }
