@@ -60,7 +60,8 @@ class SimpleTextSpringTestIT {
         SimpleTextProducer simpleTextProducer = new SimpleTextProducer(kafkaTemplate);
         simpleTextProducer.send("my message");
 
-        verify(consumerService, timeout(15000).times(1)).call("received from partition 0 message: " + expectedMessage);
+        verify(consumerService, timeout(15000).times(1))
+                .call("received from partition 0 message: " + expectedMessage);
     }
 
 }

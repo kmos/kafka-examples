@@ -1,24 +1,24 @@
 package io.mosfet.simple.text;
 
-import io.mosfet.kafka.examples.simple.text.consumer.SimpleTextConsumer;
+import io.mosfet.kafka.examples.simple.text.consumer.ConsumerService;
 import io.mosfet.kafka.examples.simple.text.producer.SimpleTextProducer;
 import io.mosfet.simple.util.KafkaHelperBuilder;
 import io.mosfet.simple.util.KafkaTestHelper;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.kafka.listener.MessageListener;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.springframework.kafka.test.utils.ContainerTestUtils.waitForAssignment;
 
 @Testcontainers
@@ -29,6 +29,7 @@ class SimpleTextTest {
 
     public static final String CONSUMER_GROUP = "simple.mygroup";
     public static final String TOPIC = "simple.text";
+    private static final String MESSAGE = "my message";
 
     private KafkaTestHelper kafkaTestHelper;
 
@@ -39,6 +40,7 @@ class SimpleTextTest {
         kafkaTestHelper = new KafkaHelperBuilder(kafkaContainer.getBootstrapServers(), TOPIC)
                 .withKafkaTemplate()
                 .build();
+
     }
 
     @AfterEach
@@ -49,40 +51,35 @@ class SimpleTextTest {
     @Test
     @DisplayName("I want to send a text message in a kafka queue and be sure that is consumed")
     void givenAMessageReadIt() {
-        AtomicBoolean isCalled = new AtomicBoolean(false);
+        MessageListener<String, String> listener = Mockito.mock(MessageListener.class);
 
         waitForAssignment(
-                kafkaTestHelper.createConsumer(new SimpleTextConsumer(text -> isCalled.set(true)), CONSUMER_GROUP),
+                kafkaTestHelper.createConsumer(listener, CONSUMER_GROUP),
                 kafkaTestHelper.getPartitions());
 
         SimpleTextProducer simpleTextProducer = new SimpleTextProducer(kafkaTestHelper.getKafkaTemplate().get());
         simpleTextProducer.send("my message");
 
-        await().atMost(5, TimeUnit.SECONDS).until(isCalled::get);
+        verify(listener, timeout(1000).times(1)).onMessage(any(ConsumerRecord.class));
     }
 
     @Test
     @DisplayName("I want to send a text message in a kafka queue and check the message")
     void givenAMessageReadItCorrectly() {
-        String expectedMessage = "my message";
 
-        AtomicBoolean isCalled = new AtomicBoolean(false);
-        AtomicReference<String> actualMessage = new AtomicReference<>("");
+        ConsumerService consumerService = Mockito.mock(ConsumerService.class);
 
-        waitForAssignment(kafkaTestHelper.createConsumer(text -> {
-            isCalled.set(true);
-            actualMessage.set(text.value());
-            }, CONSUMER_GROUP), kafkaTestHelper.getPartitions());
+        waitForAssignment(
+                kafkaTestHelper.createConsumer(
+                        text -> consumerService.call(text.value()), CONSUMER_GROUP),
+                kafkaTestHelper.getPartitions());
 
         kafkaTestHelper.getKafkaTemplate()
                 .map(SimpleTextProducer::new)
                 .orElseThrow()
-                .send(expectedMessage);
+                .send(MESSAGE);
 
-        await().atMost(10, TimeUnit.SECONDS)
-                .until(isCalled::get);
-
-        assertEquals(expectedMessage, actualMessage.get());
+        verify(consumerService, timeout(1000).times(1)).call(MESSAGE);
     }
 
 }
