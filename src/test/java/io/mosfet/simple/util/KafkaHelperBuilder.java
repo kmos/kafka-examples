@@ -1,19 +1,12 @@
 package io.mosfet.simple.util;
 
-import io.mosfet.kafka.examples.simple.text.consumer.listener.TextConsumer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.MessageListener;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +18,7 @@ public final class KafkaHelperBuilder {
     private final String bootstrapAddress;
     private final String topic;
     private int partitions = 1;
-    private TextConsumer textConsumer;
     private boolean template;
-    private String consumerGroup = "simple.aConsumerGroup";
 
     public KafkaHelperBuilder(String bootstrapAddress, String topic) {
         this.bootstrapAddress = bootstrapAddress;
@@ -36,16 +27,6 @@ public final class KafkaHelperBuilder {
 
     public KafkaHelperBuilder partitions(int partitions) {
         this.partitions = partitions;
-        return this;
-    }
-
-    public KafkaHelperBuilder consumer(TextConsumer textConsumer) {
-        this.textConsumer = textConsumer;
-        return this;
-    }
-
-    public KafkaHelperBuilder consumerGroup(String consumerGroup) {
-        this.consumerGroup = consumerGroup;
         return this;
     }
 
@@ -62,10 +43,6 @@ public final class KafkaHelperBuilder {
             throw new RuntimeException(e);
         }
 
-        if (textConsumer !=null) {
-            initializeVanillaConsumer(topic, consumerGroup, bootstrapAddress, textConsumer);
-        }
-
         if (template) {
             return new KafkaTestHelper(bootstrapAddress, topic, partitions, new KafkaTemplate<>(
                     new DefaultKafkaProducerFactory<>(Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress,
@@ -77,7 +54,7 @@ public final class KafkaHelperBuilder {
     }
 
     private void createTopic(String bootstrapServers, String topic, int partitions) throws InterruptedException, ExecutionException {
-        Map<String, Object> conf = new HashMap<String, Object>();
+        Map<String, Object> conf = new HashMap<>();
         conf.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         AdminClient.create(conf)
@@ -88,22 +65,4 @@ public final class KafkaHelperBuilder {
                 .get();
     }
 
-    private void initializeVanillaConsumer(String topic, String consumerGroup, String bootstrapServers, TextConsumer textConsumer) {
-        ContainerProperties containerProperties = new ContainerProperties(topic);
-
-        containerProperties.setMessageListener((MessageListener<String, String>) record ->
-        {
-            try {
-                textConsumer.onMessage(record.value(), record.partition());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        new ConcurrentMessageListenerContainer<>(new DefaultKafkaConsumerFactory<>(
-                Map.of(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, ConsumerConfig.GROUP_ID_CONFIG, consumerGroup),
-                new StringDeserializer(),
-                new StringDeserializer()),
-                containerProperties).start();
-    }
 }
