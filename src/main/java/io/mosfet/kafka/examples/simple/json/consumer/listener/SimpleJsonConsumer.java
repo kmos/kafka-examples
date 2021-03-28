@@ -1,5 +1,6 @@
-package io.mosfet.kafka.examples.simple.json.consumer.message;
+package io.mosfet.kafka.examples.simple.json.consumer.listener;
 
+import io.mosfet.kafka.examples.simple.json.consumer.message.Order;
 import io.mosfet.kafka.examples.simple.json.consumer.service.ConsumerJsonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
