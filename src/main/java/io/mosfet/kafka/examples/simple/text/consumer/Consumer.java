@@ -1,4 +1,4 @@
-package io.mosfet.kafka.examples.simple.consumer;
+package io.mosfet.kafka.examples.simple.text.consumer;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;

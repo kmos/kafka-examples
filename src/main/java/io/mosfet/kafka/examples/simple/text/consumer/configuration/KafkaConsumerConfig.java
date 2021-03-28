@@ -1,10 +1,10 @@
-package io.mosfet.kafka.examples.simple.consumer.configuration;
+package io.mosfet.kafka.examples.simple.text.consumer.configuration;
 
-import io.mosfet.kafka.examples.KafkaConfig;
-import io.mosfet.kafka.examples.simple.consumer.Consumer;
-import io.mosfet.kafka.examples.simple.consumer.ConsumerService;
-import io.mosfet.kafka.examples.simple.consumer.SimpleConsumerService;
-import io.mosfet.kafka.examples.simple.consumer.SimpleTextConsumer;
+import io.mosfet.kafka.examples.configuration.KafkaConfig;
+import io.mosfet.kafka.examples.simple.text.consumer.Consumer;
+import io.mosfet.kafka.examples.simple.text.consumer.ConsumerService;
+import io.mosfet.kafka.examples.simple.text.consumer.SimpleConsumerService;
+import io.mosfet.kafka.examples.simple.text.consumer.SimpleTextConsumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -49,5 +49,4 @@ public class KafkaConsumerConfig {
     Consumer consumer(ConsumerService consumerService) {
         return new SimpleTextConsumer(consumerService);
     }
-
 }

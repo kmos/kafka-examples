@@ -1,4 +1,4 @@
-package io.mosfet.kafka.examples;
+package io.mosfet.kafka.examples.configuration;
 
 public class KafkaConfig {
 
