@@ -53,12 +53,10 @@ class SimpleTextTest {
     void givenAMessageReadIt() {
         MessageListener<String, String> listener = Mockito.mock(MessageListener.class);
 
-        waitForAssignment(
-                kafkaTestHelper.createConsumer(listener, CONSUMER_GROUP),
-                kafkaTestHelper.getPartitions());
+        waitForAssignment(kafkaTestHelper.createConsumer(listener, CONSUMER_GROUP), kafkaTestHelper.getPartitions());
 
         SimpleTextProducer simpleTextProducer = new SimpleTextProducer(kafkaTestHelper.getKafkaTemplate().get());
-        simpleTextProducer.send("my message");
+        simpleTextProducer.send(MESSAGE);
 
         verify(listener, timeout(1000).times(1)).onMessage(any(ConsumerRecord.class));
     }
