@@ -18,7 +18,7 @@ public class SimpleTextConsumer implements Consumer {
     }
 
     @Override
-    @KafkaListener(topics = TOPIC, groupId = "simple")
+    @KafkaListener(topics = TOPIC, groupId = "simple.textGroup")
     public void onMessage(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
         LOGGER.info("received message from topic: {}", TOPIC);
         consumerService.call("received from partition " + partition + " message: " + message);

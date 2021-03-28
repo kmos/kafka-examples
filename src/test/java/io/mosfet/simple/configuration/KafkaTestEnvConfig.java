@@ -21,7 +21,7 @@ public class KafkaTestEnvConfig {
 
     @Bean
     public KafkaConfig kafkaConfig(KafkaContainer kafkaContainer) {
-        return new KafkaConfig(kafkaContainer.getBootstrapServers(), "simple.mygroup");
+        return new KafkaConfig(kafkaContainer.getBootstrapServers(), "simple.textGroup");
     }
 
     @Bean
