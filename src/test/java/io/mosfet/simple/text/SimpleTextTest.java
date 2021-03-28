@@ -5,6 +5,7 @@ import io.mosfet.kafka.examples.simple.text.producer.pub.SimpleTextProducer;
 import io.mosfet.simple.util.KafkaHelperBuilder;
 import io.mosfet.simple.util.KafkaTestHelper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +28,7 @@ class SimpleTextTest {
     @Container
     private final KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.1"));
 
-    public static final String CONSUMER_GROUP = "simple.mygroup";
+    public static final String CONSUMER_GROUP = "simple.textGroup";
     public static final String TOPIC = "simple.text";
     private static final String MESSAGE = "my message";
 
@@ -53,7 +54,7 @@ class SimpleTextTest {
     void givenAMessageReadIt() {
         MessageListener<String, String> listener = Mockito.mock(MessageListener.class);
 
-        waitForAssignment(kafkaTestHelper.createConsumer(listener, CONSUMER_GROUP), kafkaTestHelper.getPartitions());
+        waitForAssignment(kafkaTestHelper.createConsumer(listener, CONSUMER_GROUP, new StringDeserializer()), kafkaTestHelper.getPartitions());
 
         SimpleTextProducer simpleTextProducer = new SimpleTextProducer(kafkaTestHelper.getKafkaTemplate().get());
         simpleTextProducer.send(MESSAGE);
@@ -68,7 +69,7 @@ class SimpleTextTest {
         ConsumerService consumerService = Mockito.mock(ConsumerService.class);
         MessageListener<String, String> consumer = text -> consumerService.call(text.value());
 
-        waitForAssignment(kafkaTestHelper.createConsumer(consumer, CONSUMER_GROUP), kafkaTestHelper.getPartitions());
+        waitForAssignment(kafkaTestHelper.createConsumer(consumer, CONSUMER_GROUP, new StringDeserializer()), kafkaTestHelper.getPartitions());
 
         kafkaTestHelper.getKafkaTemplate()
                 .map(SimpleTextProducer::new)

@@ -19,6 +19,7 @@ public final class KafkaHelperBuilder {
     private final String topic;
     private int partitions = 1;
     private boolean template;
+    private Class<?> valueSerializer = StringSerializer.class;
 
     public KafkaHelperBuilder(String bootstrapAddress, String topic) {
         this.bootstrapAddress = bootstrapAddress;
@@ -35,6 +36,11 @@ public final class KafkaHelperBuilder {
         return this;
     }
 
+    public KafkaHelperBuilder withSerializer(Class<?> serializer) {
+        this.valueSerializer = serializer;
+        return this;
+    }
+
     public KafkaTestHelper build()
     {
         try {
@@ -47,7 +53,7 @@ public final class KafkaHelperBuilder {
             return new KafkaTestHelper(bootstrapAddress, topic, partitions, new KafkaTemplate<>(
                     new DefaultKafkaProducerFactory<>(Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress,
                             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
-                            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class))));
+                            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer))));
         }
 
         return new KafkaTestHelper(bootstrapAddress, topic, partitions);
