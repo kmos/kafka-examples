@@ -1,7 +1,7 @@
 package io.mosfet.simple.text;
 
 import io.mosfet.kafka.examples.simple.text.consumer.service.ConsumerService;
-import io.mosfet.kafka.examples.simple.text.producer.SimpleTextProducer;
+import io.mosfet.kafka.examples.simple.text.producer.pub.SimpleTextProducer;
 import io.mosfet.simple.util.KafkaHelperBuilder;
 import io.mosfet.simple.util.KafkaTestHelper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

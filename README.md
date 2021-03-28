@@ -3,10 +3,10 @@
 Some examples for kafka
 
 ### Examples kafka
- - simple text producer and consumer
- - simple json producer and consumer
+ - simple text producer and textConsumer
+ - simple json producer and textConsumer
  - simple filter messages based on header
- - avro producer and consumer with registry
+ - avro producer and textConsumer with registry
 
 ### Example Kafka stream
 

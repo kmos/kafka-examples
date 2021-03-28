@@ -2,7 +2,7 @@ package io.mosfet.kafka.examples.simple.json.consumer.configuration;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import io.mosfet.kafka.examples.configuration.KafkaConfig;
-import io.mosfet.kafka.examples.simple.json.consumer.message.Order;
+import io.mosfet.kafka.examples.simple.json.message.Order;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;

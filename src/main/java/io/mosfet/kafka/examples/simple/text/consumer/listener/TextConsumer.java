@@ -1,5 +1,5 @@
 package io.mosfet.kafka.examples.simple.text.consumer.listener;
 
-public interface Consumer {
+public interface TextConsumer {
     void onMessage(String message, int partition);
 }

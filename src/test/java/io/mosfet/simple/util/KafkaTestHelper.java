@@ -1,6 +1,6 @@
 package io.mosfet.simple.util;
 
-import io.mosfet.kafka.examples.simple.text.consumer.listener.Consumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.TextConsumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -48,11 +48,11 @@ public class KafkaTestHelper {
         return container;
     }
 
-    public ConcurrentMessageListenerContainer<String, String> createConsumer(Consumer consumer, String consumerGroup) {
+    public ConcurrentMessageListenerContainer<String, String> createConsumer(TextConsumer textConsumer, String consumerGroup) {
         ContainerProperties containerProperties = new ContainerProperties(topic);
         containerProperties.setMessageListener((MessageListener<String, String>) record -> {
             try {
-                consumer.onMessage(record.value(), record.partition());
+                textConsumer.onMessage(record.value(), record.partition());
             } catch (Exception e) {
                 e.printStackTrace();
             }

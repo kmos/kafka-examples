@@ -1,8 +1,8 @@
 package io.mosfet.kafka.examples.simple.text.consumer.configuration;
 
 import io.mosfet.kafka.examples.configuration.KafkaConfig;
-import io.mosfet.kafka.examples.simple.text.consumer.listener.Consumer;
-import io.mosfet.kafka.examples.simple.text.consumer.listener.SimpleTextConsumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.SimpleTextTextConsumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.TextConsumer;
 import io.mosfet.kafka.examples.simple.text.consumer.service.ConsumerService;
 import io.mosfet.kafka.examples.simple.text.consumer.service.SimpleConsumerService;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -46,7 +46,7 @@ public class KafkaTextConsumerConfig {
     }
 
     @Bean
-    Consumer consumer(ConsumerService consumerService) {
-        return new SimpleTextConsumer(consumerService);
+    TextConsumer consumer(ConsumerService consumerService) {
+        return new SimpleTextTextConsumer(consumerService);
     }
 }

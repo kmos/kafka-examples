@@ -1,4 +1,4 @@
-package io.mosfet.kafka.examples.simple.json.consumer.message;
+package io.mosfet.kafka.examples.simple.json.message;
 
 public class Order {
 

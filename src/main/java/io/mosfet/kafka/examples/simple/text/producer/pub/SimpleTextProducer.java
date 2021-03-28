@@ -1,10 +1,10 @@
-package io.mosfet.kafka.examples.simple.text.producer;
+package io.mosfet.kafka.examples.simple.text.producer.pub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
-public class SimpleTextProducer implements SimpleProducer {
+public class SimpleTextProducer implements TextProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private static final String TOPIC = "simple.text";

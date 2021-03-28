@@ -1,6 +1,6 @@
 package io.mosfet.simple.util;
 
-import io.mosfet.kafka.examples.simple.text.consumer.listener.Consumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.TextConsumer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -25,7 +25,7 @@ public final class KafkaHelperBuilder {
     private final String bootstrapAddress;
     private final String topic;
     private int partitions = 1;
-    private Consumer consumer;
+    private TextConsumer textConsumer;
     private boolean template;
     private String consumerGroup = "simple.aConsumerGroup";
 
@@ -39,8 +39,8 @@ public final class KafkaHelperBuilder {
         return this;
     }
 
-    public KafkaHelperBuilder consumer(Consumer consumer) {
-        this.consumer = consumer;
+    public KafkaHelperBuilder consumer(TextConsumer textConsumer) {
+        this.textConsumer = textConsumer;
         return this;
     }
 
@@ -62,8 +62,8 @@ public final class KafkaHelperBuilder {
             throw new RuntimeException(e);
         }
 
-        if (consumer!=null) {
-            initializeVanillaConsumer(topic, consumerGroup, bootstrapAddress, consumer);
+        if (textConsumer !=null) {
+            initializeVanillaConsumer(topic, consumerGroup, bootstrapAddress, textConsumer);
         }
 
         if (template) {
@@ -88,13 +88,13 @@ public final class KafkaHelperBuilder {
                 .get();
     }
 
-    private void initializeVanillaConsumer(String topic, String consumerGroup, String bootstrapServers, Consumer consumer) {
+    private void initializeVanillaConsumer(String topic, String consumerGroup, String bootstrapServers, TextConsumer textConsumer) {
         ContainerProperties containerProperties = new ContainerProperties(topic);
 
         containerProperties.setMessageListener((MessageListener<String, String>) record ->
         {
             try {
-                consumer.onMessage(record.value(), record.partition());
+                textConsumer.onMessage(record.value(), record.partition());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

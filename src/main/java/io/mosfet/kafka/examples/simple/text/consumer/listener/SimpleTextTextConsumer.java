@@ -8,13 +8,13 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 
-public class SimpleTextConsumer implements Consumer {
+public class SimpleTextTextConsumer implements TextConsumer {
 
     public static final String TOPIC = "simple.text";
     public final ConsumerService consumerService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTextConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTextTextConsumer.class);
 
-    public SimpleTextConsumer(ConsumerService consumerService) {
+    public SimpleTextTextConsumer(ConsumerService consumerService) {
         this.consumerService = consumerService;
     }
 
