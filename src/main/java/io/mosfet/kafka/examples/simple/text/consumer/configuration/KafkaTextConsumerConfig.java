@@ -1,10 +1,10 @@
 package io.mosfet.kafka.examples.simple.text.consumer.configuration;
 
 import io.mosfet.kafka.examples.configuration.KafkaConfig;
-import io.mosfet.kafka.examples.simple.text.consumer.Consumer;
-import io.mosfet.kafka.examples.simple.text.consumer.ConsumerService;
-import io.mosfet.kafka.examples.simple.text.consumer.SimpleConsumerService;
-import io.mosfet.kafka.examples.simple.text.consumer.SimpleTextConsumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.Consumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.SimpleTextConsumer;
+import io.mosfet.kafka.examples.simple.text.consumer.service.ConsumerService;
+import io.mosfet.kafka.examples.simple.text.consumer.service.SimpleConsumerService;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -19,10 +19,10 @@ import java.util.Map;
 
 @EnableKafka
 @Configuration
-public class KafkaConsumerConfig {
+public class KafkaTextConsumerConfig {
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory(KafkaConfig kafkaConfig) {
+    public ConsumerFactory<String, String> consumerTextFactory(KafkaConfig kafkaConfig) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapAddresses());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConfig.getGroupId());
@@ -33,9 +33,9 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(ConsumerFactory<String, String> consumerFactory) {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(ConsumerFactory<String, String> consumerTextFactory) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory);
+        factory.setConsumerFactory(consumerTextFactory);
 
         return factory;
     }

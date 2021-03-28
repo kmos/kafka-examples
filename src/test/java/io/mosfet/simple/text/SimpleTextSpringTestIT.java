@@ -1,9 +1,10 @@
 package io.mosfet.simple.text;
 
-import io.mosfet.kafka.examples.simple.text.consumer.ConsumerService;
+import io.mosfet.kafka.examples.simple.text.consumer.service.ConsumerService;
 import io.mosfet.kafka.examples.simple.text.producer.SimpleTextProducer;
 import io.mosfet.simple.configuration.KafkaTestEnvConfig;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ class SimpleTextSpringTestIT {
     }
 
     @Test
+    @Disabled
     @DisplayName("I want to send a text message in a kafka queue and be sure that is consumed")
     void givenAMessageReadIt() throws InterruptedException {
         Thread.sleep(5000);

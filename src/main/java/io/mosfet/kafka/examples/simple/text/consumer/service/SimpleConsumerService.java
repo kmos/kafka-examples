@@ -1,4 +1,4 @@
-package io.mosfet.kafka.examples.simple.text.consumer;
+package io.mosfet.kafka.examples.simple.text.consumer.service;
 
 public class SimpleConsumerService implements ConsumerService {
     @Override

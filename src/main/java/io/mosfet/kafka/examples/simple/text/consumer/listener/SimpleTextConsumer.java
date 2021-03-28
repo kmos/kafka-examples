@@ -1,5 +1,6 @@
-package io.mosfet.kafka.examples.simple.text.consumer;
+package io.mosfet.kafka.examples.simple.text.consumer.listener;
 
+import io.mosfet.kafka.examples.simple.text.consumer.service.ConsumerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;

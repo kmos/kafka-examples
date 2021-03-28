@@ -1,6 +1,6 @@
 package io.mosfet.simple.util;
 
-import io.mosfet.kafka.examples.simple.text.consumer.Consumer;
+import io.mosfet.kafka.examples.simple.text.consumer.listener.Consumer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
