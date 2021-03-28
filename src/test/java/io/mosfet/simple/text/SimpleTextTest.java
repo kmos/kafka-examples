@@ -68,11 +68,9 @@ class SimpleTextTest {
     void givenAMessageReadItCorrectly() {
 
         ConsumerService consumerService = Mockito.mock(ConsumerService.class);
+        MessageListener<String, String> consumer = text -> consumerService.call(text.value());
 
-        waitForAssignment(
-                kafkaTestHelper.createConsumer(
-                        text -> consumerService.call(text.value()), CONSUMER_GROUP),
-                kafkaTestHelper.getPartitions());
+        waitForAssignment(kafkaTestHelper.createConsumer(consumer, CONSUMER_GROUP), kafkaTestHelper.getPartitions());
 
         kafkaTestHelper.getKafkaTemplate()
                 .map(SimpleTextProducer::new)
